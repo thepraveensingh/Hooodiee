@@ -1,0 +1,20 @@
+//in usermodel
+  fullname
+  email
+  password
+  contact 
+  picture - db...
+  cart - array of id
+  isadmin - boolean
+  order- array of id
+
+//productmodel
+image
+name
+price
+discount
+bg-color
+panelcolor
+textcolor
+
+//single seller
