@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const expressSession = require('express-session')
+const flash = require('connect-flash')
 
 const db = require('./config/mongooseConnection')
 const ownersRouter = require('./routes/ownersRouter')
@@ -14,7 +16,16 @@ require('dotenv').config(); //dotenv me variables h vo use me ajynge
 app.set("view engine","ejs");
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
+app.use(cookieParser());
+app.use(expressSession({
+  resave: false,
+  saveUninitialized : false,//esa bnda aa rha h jo initialized nhi h
+  secret : process.env.EXPRESS_SESSION_SECRET,
+}))
+app.use(flash()); //flash ko setup krne k liye session ki jrurat thi i.e. expresssession
 app.use(express.static(path.join(__dirname,'public')));
+
+
 
 app.use("/", indexRouter);
 app.use('/owners',ownersRouter);
