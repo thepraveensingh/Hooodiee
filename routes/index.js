@@ -11,9 +11,7 @@ router.get("/",(req, res) => {
 
 
 router.get("/addToCart/:productId", isLoggedIn, async(req, res)=> {
-  console.log(req.user);
   let user = await userModel.findOne({email: req.user.email});
-  console.log(user);
   
   user.cart.push(req.params.productId);
   await user.save();
@@ -31,5 +29,8 @@ router.get("/cart", isLoggedIn, async(req, res)=> {
  let user = await userModel.findOne({email : req.user.email}).populate('cart');
  res.render('cart',{user});
 });
-
+router.get("/profile", isLoggedIn, async(req, res)=> {
+  let user = await userModel.findOne({email : req.user.email}).populate('cart');
+  res.render('profile',{user})
+ });
 module.exports = router;

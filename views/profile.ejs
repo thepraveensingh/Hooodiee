@@ -1,0 +1,93 @@
+<%- include('./partials/header') %>
+
+<div class="container mx-auto mt-10 p-5">
+    <div class="flex space-x-8">
+        
+        <div class="w-1/4 bg-white shadow-md rounded-md p-5">
+            <h2 class="text-2xl font-bold mb-5">Hello <%= user.fullName %></h2>
+            <ul class="space-y-3">
+                <li>
+                    <a href="/profile" class="text-gray-600 hover:text-blue-600 ">Profile Overview</a>
+                </li>
+                <li>
+                    <a href="/profile/orders" class="text-gray-600 hover:text-blue-600 ">Order History</a>
+                </li>
+                <li>
+                    <a href="/profile/address" class="text-gray-600 hover:text-blue-600 ">Address Book</a>
+                </li>
+                <li>
+                    <a href="/profile/payment" class="text-gray-600 hover:text-blue-600 ">Payment Methods</a>
+                </li>
+                <li>
+                    <a href="/users/logout" class="text-gray-600 hover:text-red-600 ">Logout</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Profile Section -->
+        <div class="w-3/4 bg-white shadow-md rounded-md p-8">
+            <h2 class="text-2xl mb-5">Profile Overview</h2>
+
+            <!-- Profile Picture and User Information -->
+            <div class="flex items-center space-x-8 mb-8">
+                
+                <!-- Profile Picture with Edit Overlay -->
+                <div class="relative w-32 h-32 rounded-full overflow-hidden border border-gray-300">
+                    <% if(user.profilePic) { %>
+                        <img src="data:image/jpeg;base64,<%= user.profilePic.toString('base64') %>" alt="Profile Picture" class="w-full h-full object-cover">
+                    <% } else { %>
+                        <img src="/path/to/default/avatar.png" alt="Default Profile Picture" class="w-full h-full object-cover">
+                    <% } %>
+
+                    <!-- Edit Icon Overlay -->
+                    <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200">
+                        <label for="profilePic" class="cursor-pointer text-white text-center">
+                            <i class="ri-camera-line text-2xl mb-2"></i>
+                            <p class="text-sm">Edit</p>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Hidden File Input for Profile Picture -->
+                <form action="/users/profile/uploadPic" method="POST" enctype="multipart/form-data">
+                    <input id="profilePic" type="file" name="profilePic" class="hidden" onchange="this.form.submit()">
+                </form>
+
+                <!-- User Info -->
+                <div>
+                    <h3 class="text-xl font-semibold"><%= user.fullName %></h3>
+                    <p class="text-gray-600 mb-2">Email: <%= user.email %></p>
+                    <p class="text-gray-600">Contact: <%= user.contact || 'Not provided' %></p>
+                </div>
+            </div>
+
+            <!-- Order History Section -->
+            <div>
+                <h3 class="text-xl mb-5">Order History</h3>
+                
+                <% if(user.orders.length > 0) { %>
+                    <div class="space-y-4">
+                        <% user.orders.forEach(function(order) { %>
+                            <div class="border border-gray-200 rounded-md p-5 bg-gray-50">
+                                <div class="flex justify-between">
+                                    <div>
+                                        <h4 class="text-lg font-semibold">Order ID: <%= order.id %></h4>
+                                        <p class="text-gray-600">Placed on: <%= new Date(order.date).toLocaleDateString() %></p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-lg font-semibold">Total: ₹ <%= order.total %></p>
+                                        <a href="/order/<%= order.id %>" class="text-blue-500 hover:underline">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+                <% } else { %>
+                    <p class="text-gray-600">You have not placed any orders yet.</p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('./partials/footer') %>

@@ -16,6 +16,10 @@ const userSchema = mongoose.Schema({
   orders:{
     type :Array,
     default: []
+  },
+  profilePic :{
+    type : Buffer,
+    default : null
   }
 })
 module.exports = mongoose.model('user',userSchema);

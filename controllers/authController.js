@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const {} = require('../utils/generateToken');
 const generateToken = require('../utils/generateToken');
-
+const productModel = require('../models/productModel')
 
 module.exports.registerUser = async(req,res)=>{
   try{
@@ -45,11 +45,13 @@ module.exports.loginUser = async(req,res)=>{
   
   if(!user) return res.status(402).send("Email or password incorrect")
 
-  bcrypt.compare(password,user.password,(err,result)=>{
+  bcrypt.compare(password,user.password,async(err,result)=>{
     if(result){
       let token = generateToken(user);
       res.cookie("token",token);
-      res.send("you can login");
+      let products = await productModel.find();
+      let success = req.flash("success");
+      res.render('shop',{products,success});
     }
     else{
       return res.status(402).send("Email or password incorrect")
