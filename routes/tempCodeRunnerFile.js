@@ -1,1 +1,1 @@
-  let success = req.flash("success");
+discountFilter
