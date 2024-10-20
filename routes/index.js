@@ -59,39 +59,39 @@ router.get("/addToCart/:productId", isLoggedIn, async(req, res)=> {
   res.redirect('/shop')
 });
 
-// router.get("/minusCart/:productId", isLoggedIn, async (req, res) => {
-//   try {
-//     let user = await userModel.findOne({ email: req.user.email });
-//     const productIndex = user.cart.findIndex(item => item.productId.toString() === req.params.productId);
+router.get("/minusCart/:productId", isLoggedIn, async (req, res) => {
+  try {
+    let user = await userModel.findOne({ email: req.user.email });
+    const productIndex = user.cart.findIndex(item => item.productId.toString() === req.params.productId);
 
-//     if (productIndex > -1) {
-//       user.cart[productIndex].quantity -= 1;
-//       if (user.cart[productIndex].quantity <= 0) {
-//         user.cart.splice(productIndex, 1);
-//       }
-//     }
-//     await user.save();
-//     res.redirect('/cart');
-//   } catch (err) {
-//     req.flash("error", "Something went wrong");
-//     res.redirect("/cart");
-//   }
-// });
+    if (productIndex > -1) {
+      user.cart[productIndex].quantity -= 1;
+      if (user.cart[productIndex].quantity <= 0) {
+        user.cart.splice(productIndex, 1);
+      }
+    }
+    await user.save();
+    res.redirect('/cart');
+  } catch (err) {
+    req.flash("error", "Something went wrong");
+    res.redirect("/cart");
+  }
+});
 
-// router.get("/plusCart/:productId", isLoggedIn, async (req, res) => {
-//   try {
-//     let user = await userModel.findOne({ email: req.user.email });
-//     const productIndex = user.cart.findIndex(item => item.productId.toString() === req.params.productId);
-//     if (productIndex > -1) {
-//       user.cart[productIndex].quantity += 1;
-//     }
-//     await user.save();
-//     res.redirect('/cart');
-//   } catch (err) {
-//     req.flash("error", "Something went wrong");
-//     res.redirect("/cart");
-//   }
-// });
+router.get("/plusCart/:productId", isLoggedIn, async (req, res) => {
+  try {
+    let user = await userModel.findOne({ email: req.user.email });
+    const productIndex = user.cart.findIndex(item => item.productId.toString() === req.params.productId);
+    if (productIndex > -1) {
+      user.cart[productIndex].quantity += 1;
+    }
+    await user.save();
+    res.redirect('/cart');
+  } catch (err) {
+    req.flash("error", "Something went wrong");
+    res.redirect("/cart");
+  }
+});
 
 
 router.get("/checkout", isLoggedIn, async(req, res)=> {
@@ -120,21 +120,20 @@ router.get("/shop", isLoggedIn, async (req, res) => {
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
       products = products.filter(product => new Date(product.createdAt) >= thirtyDaysAgo);
   }
-  const lowThreshold = 200;    
-  const mediumThreshold = 500; 
-  if (discountFilter === 'low') {
-      products = products.filter(product => product.discount < lowThreshold);
-  } else if (discountFilter === 'medium') {
-      products = products.filter(product => product.discount < mediumThreshold);
-  } else if (discountFilter === 'high') {
+  const lowThreshold = 50;    
+  const mediumThreshold = 200; 
+  const highThreshold = 500;
+  if (discountFilter === '20') {
+      products = products.filter(product => product.discount > lowThreshold);
+  } else if (discountFilter === '40') {
       products = products.filter(product => product.discount > mediumThreshold);
+  } else if (discountFilter === '60') {
+      products = products.filter(product => product.discount > highThreshold);
   }
 
   let success = req.flash("success");
   res.render('shop', { products, success, filter, discountFilter });
 });
-
-
 
 router.get("/cart", isLoggedIn, async(req, res)=> {
  let user = await userModel.findOne({email : req.user.email}).populate('cart');
