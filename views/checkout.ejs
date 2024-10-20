@@ -1,0 +1,45 @@
+<%- include('./partials/header') %>
+
+<div class="container mx-auto my-10 p-5 bg-white rounded-lg ">
+    <div class="overflow-x-auto">
+        <!-- Adjust the table width using max-w-full or specific width classes -->
+        <table class="min-w-3/4 max-w-md mx-auto border-collapse border border-gray-300">
+            <thead>
+                <tr>
+                    <th class="border border-gray-300 px-4 py-2">Product</th>
+                    <th class="border border-gray-300 px-4 py-2">Price</th>
+                    <th class="border border-gray-300 px-4 py-2">Quantity</th>
+                    <th class="border border-gray-300 px-4 py-2">Platform Fee</th>
+                    <th class="border border-gray-300 px-4 py-2">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% let grandTotal = 0; %>
+                <% products.forEach((product) => { 
+                    const productTotal = product.price - product.discount + 20;
+                    grandTotal += productTotal; 
+                %>
+                <tr>
+                    <td class="border border-gray-300 px-4 py-2"><%= product.name %></td>
+                    <td class="border border-gray-300 px-4 py-2">₹<%= product.price %></td>
+                    <td class="border border-gray-300 px-4 py-2">₹<%= product.discount %></td>
+                    <td class="border border-gray-300 px-4 py-2">₹ 20</td>
+                    <td class="border border-gray-300 px-4 py-2">₹<%= Number(productTotal) %></td>
+                </tr>
+                <% }) %>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td class="border border-gray-300 px-4 py-2 font-bold" colspan="4">Total Amount:</td>
+                    <td class="border border-gray-300 px-4 py-2 font-bold">₹<%= grandTotal %></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div class="mt-0 justify-center mt-4 flex ">
+        <form action="/placeOrder" method="POST">
+            <button type="submit" class="px-5 py-2 bg-black text-white rounded hover:bg-zinc-600">Place Order</button>
+        </form>
+    </div>
+</div>

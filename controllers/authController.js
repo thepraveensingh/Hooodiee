@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken')
 const {} = require('../utils/generateToken');
 const generateToken = require('../utils/generateToken');
 const productModel = require('../models/productModel')
+const isLoggedIn = require('../middlewares/isLoggedIn')
+const upload = require('../config/multerConfig')
 
 module.exports.registerUser = async(req,res)=>{
   try{
@@ -26,7 +28,7 @@ module.exports.registerUser = async(req,res)=>{
           // res.send(createdUser);
           let token = generateToken(createdUser);
           res.cookie('token',token);
-          res.send('user created successfully')
+          res.redirect('/');
         }
 
       })
@@ -39,6 +41,8 @@ module.exports.registerUser = async(req,res)=>{
 };
 
 module.exports.loginUser = async(req,res)=>{
+  const filter = req.query.filter || 'all';
+
   let{email,password} = req.body;
   
   let user = await userModel.findOne({email:email});
@@ -51,7 +55,7 @@ module.exports.loginUser = async(req,res)=>{
       res.cookie("token",token);
       let products = await productModel.find();
       let success = req.flash("success");
-      res.render('shop',{products,success});
+      res.render('shop',{products,success,filter});
     }
     else{
       return res.status(402).send("Email or password incorrect")

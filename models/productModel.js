@@ -12,5 +12,6 @@ const productSchema = mongoose.Schema({
   bgColor: String,
   panelColor: String,
   textColor: String,
+  createdAt: { type: Date, default: Date.now }
 })
 module.exports = mongoose.model('product',productSchema);

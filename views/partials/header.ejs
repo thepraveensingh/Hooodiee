@@ -13,11 +13,11 @@
 </head>
 
 <body class="font-sans ">
-    <nav class="w-full flex  justify-between px-5 py-3">
-        <h3 class="text-3xl text-blue-900 font-bold ">Hooodiee</h3>
+    <nav class="w-full flex justify-between px-5 py-2 pt-5 ">
+        <h3 class="text-4xl text-blue-900 font-bold ">Hooodiee</h3>
         <% var loggedin = typeof loggedin !== "undefined" ? loggedin : true %>
         <% if(loggedin){ %>
-            <div class="flex gap-5">
+            <div class="flex gap-5 justify-between mr-5 ">
                 <a href="/shop">Shop</a>
                 <a href="/cart">Cart</a>
                 <a href="/profile">My Account</a>
