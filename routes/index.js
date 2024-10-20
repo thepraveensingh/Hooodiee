@@ -163,7 +163,9 @@ router.post('/profile/uploadPic',isLoggedIn, upload.single('profilePic'),async (
     }
      user.profilePic = req.file.buffer;
      await user.save();
-     res.render('profile',{user});
+     const orders = await orderModel.find({ user: req.user._id }).populate('products.product');
+
+     res.render('profile',{user,orders});
   }
   catch(err){
    console.error('Error updating profile picture:', err);
