@@ -1,14 +1,14 @@
 <%- include('./partials/header') %>
 
-<div class="container mx-auto my-10 p-5 bg-white rounded-lg ">
-    <div class="overflow-x-auto">
-        <!-- Adjust the table width using max-w-full or specific width classes -->
+<div class="container mx-auto my-10 p-5 bg-white rounded-lg">
+    <div id="billSection" class="overflow-x-auto">
+        <!-- Bill Section (Initially Visible) -->
         <table class="min-w-3/4 max-w-md mx-auto border-collapse border border-gray-300">
             <thead>
                 <tr>
                     <th class="border border-gray-300 px-4 py-2">Product</th>
                     <th class="border border-gray-300 px-4 py-2">Price</th>
-                    <th class="border border-gray-300 px-4 py-2">Quantity</th>
+                    <th class="border border-gray-300 px-4 py-2">Discount</th>
                     <th class="border border-gray-300 px-4 py-2">Platform Fee</th>
                     <th class="border border-gray-300 px-4 py-2">Total</th>
                 </tr>
@@ -37,9 +37,46 @@
         </table>
     </div>
 
-    <div class="mt-0 justify-center mt-4 flex ">
-        <form action="/placeOrder" method="POST">
-            <button type="submit" class="px-5 py-2 bg-black text-white rounded hover:bg-zinc-600">Place Order</button>
-        </form>
+    <!-- Checkout Button -->
+    <div id="checkoutForm" class="mt-0 justify-center mt-4 flex">
+        <button id="placeOrderBtn" class="px-5 py-2 bg-black text-white rounded hover:bg-zinc-600">Place Order</button>
+    </div>
+
+    <!-- Thank You Message Section (Initially Hidden) -->
+    <div id="thankYouMessage" class="hidden text-center mt-4">
+        <div class="flex justify-center">
+            <!-- Replacing SVG with Image -->
+            <img width="108" height="108" src="https://img.icons8.com/fluency/48/ok--v1.png" alt="Order Success" />
+        </div>
+        <p class="text-lg font-semibold mt-2">Thank you for your order!</p>
     </div>
 </div>
+
+<script>
+    // AJAX Request for Placing Order
+    document.getElementById('placeOrderBtn').addEventListener('click', async function(e) {
+        e.preventDefault(); // Prevent default form submission
+
+        try {
+            const response = await fetch('/placeOrder', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({}) // You can pass any data here if needed
+            });
+
+            if (response.ok) {
+                // Hide the bill section and the checkout button
+                document.getElementById('billSection').style.display = 'none';
+                document.getElementById('checkoutForm').style.display = 'none';
+
+                // Show the thank you message
+                document.getElementById('thankYouMessage').classList.remove('hidden');
+            } else {
+                alert('Failed to place order.');
+            }
+        } catch (error) {
+            console.error('Error placing order:', error);
+            alert('Error placing order.');
+        }
+    });
+</script>

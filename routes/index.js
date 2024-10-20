@@ -4,10 +4,47 @@ const isLoggedIn = require("../middlewares/isLoggedIn");
 const productModel = require("../models/productModel");
 const userModel = require("../models/userModel");
 const upload = require('../config/multerConfig');
-
+const orderModel = require('../models/orderModel');
 router.get("/",(req, res) => {
   let error = req.flash("error")
   res.render("index",{error,loggedin : false});
+});
+
+
+router.post('/placeOrder', isLoggedIn, async (req, res) => {
+  try {
+      let user = await userModel.findOne({ email: req.user.email }).populate('cart');
+      if (!user || !user.cart || user.cart.length === 0) {
+          return res.status(400).json({ message: 'Cart is empty.' });
+      }
+      let totalPrice = 0;
+
+      const products = await Promise.all(user.cart.map(async (productId) => {
+          const product = await productModel.findById(productId); 
+          if (!product) return null; 
+          
+          totalPrice += product.price - 20; 
+          return {
+              product: product._id,
+              quantity: 1, 
+              price: product.price
+          };
+      }));
+
+      const filteredProducts = products.filter(p => p !== null);
+      const newOrder = await orderModel.create({
+        user: user._id,
+        products: filteredProducts,
+        totalPrice: totalPrice
+      });
+      user.cart = [];
+      await user.save();
+      res.status(200).json({ message: 'Order placed successfully!' });
+
+  } catch (err) {
+      console.error('Error placing order:', err);
+      res.status(500).json({ message: 'Internal server error.' });
+  }
 });
 
 
@@ -80,8 +117,15 @@ router.get("/cart", isLoggedIn, async(req, res)=> {
  res.render('cart',{user});
 });
 router.get("/profile", isLoggedIn, async(req, res)=> {
-  let user = await userModel.findOne({email : req.user.email}).populate('cart');
-  res.render('profile',{user})
+  try {
+  let user = await userModel.findOne({email : req.user.email}).populate('orders');
+  const orders = await orderModel.find({ user: req.user._id }).populate('products.product');
+  
+  res.render('profile',{user,orders})
+  } catch (err) {
+    console.error('Error fetching profile:', err);
+    res.status(500).json({ message: 'Internal server error.' });
+  }
  });
 
 router.post('/profile/uploadPic',isLoggedIn, upload.single('profilePic'),async (req,res) =>{
