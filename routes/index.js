@@ -10,6 +10,10 @@ router.get("/",(req, res) => {
   res.render("index",{error,loggedin : false});
 });
 
+router.get('/createprod',(req,res)=>{
+  let success = req.flash("success")
+  res.render('createProducts',{success})
+})
 
 router.post('/placeOrder', isLoggedIn, async (req, res) => {
   try {
@@ -49,10 +53,7 @@ router.post('/placeOrder', isLoggedIn, async (req, res) => {
 
 
 router.get("/addToCart/:productId", isLoggedIn, async(req, res)=> {
-  console.log(req.user);
-  let user = await userModel.findOne({email: req.user.email});
-  console.log(user);
-  
+  let user = await userModel.findOne({email: req.user.email});  
   user.cart.push(req.params.productId);
   await user.save();
   req.flash("success","Added to Cart")
@@ -62,37 +63,31 @@ router.get("/addToCart/:productId", isLoggedIn, async(req, res)=> {
 router.get("/minusCart/:productId", isLoggedIn, async (req, res) => {
   try {
     let user = await userModel.findOne({ email: req.user.email });
-    const productIndex = user.cart.findIndex(item => item.productId.toString() === req.params.productId);
+    console.log(user);
+
+    const productIndex = user.cart.findIndex(item => item.toString() === req.params.productId);
+    console.log("Product index is", productIndex);
 
     if (productIndex > -1) {
-      user.cart[productIndex].quantity -= 1;
-      if (user.cart[productIndex].quantity <= 0) {
-        user.cart.splice(productIndex, 1);
-      }
+      user.cart.splice(productIndex, 1); 
     }
+
     await user.save();
     res.redirect('/cart');
+    
   } catch (err) {
+    console.error(err); // Log any errors
     req.flash("error", "Something went wrong");
     res.redirect("/cart");
   }
 });
 
 router.get("/plusCart/:productId", isLoggedIn, async (req, res) => {
-  try {
-    let user = await userModel.findOne({ email: req.user.email });
-    const productIndex = user.cart.findIndex(item => item.productId.toString() === req.params.productId);
-    if (productIndex > -1) {
-      user.cart[productIndex].quantity += 1;
-    }
-    await user.save();
-    res.redirect('/cart');
-  } catch (err) {
-    req.flash("error", "Something went wrong");
-    res.redirect("/cart");
-  }
+  let user = await userModel.findOne({email: req.user.email});  
+  user.cart.push(req.params.productId);
+  await user.save();
+  res.redirect('/cart');
 });
-
 
 router.get("/checkout", isLoggedIn, async(req, res)=> {
   try{

@@ -1,12 +1,24 @@
 const mongoose = require('mongoose');
-const config = require('config');
+const dotenv = require('dotenv');
 const dbgr = require('debug')('development:mongoose');
-mongoose.connect(`${config.get("MONGODB_URI")}/hooodiee`)
-.then(()=>{
-  dbgr('connected to mongodb');
-})
-.catch((err)=>{
-  dbgr('error connecting to mongodb ',err);
-})
 
-module.exports = mongoose.connection ;
+// Load environment variables from .env file
+dotenv.config();
+
+// Now access the MONGODB_URI from environment variables
+const mongoUri = process.env.MONGODB_URI;
+
+if (!mongoUri) {
+  dbgr('MongoDB URI is undefined! Please check your .env file.');
+  process.exit(1);  // Exit the app if the URI is missing
+}
+
+mongoose.connect(mongoUri)
+  .then(() => {
+    dbgr('connected to mongodb');
+  })
+  .catch((err) => {
+    dbgr('error connecting to mongodb ', err);
+  });
+
+module.exports = mongoose.connection;
