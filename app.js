@@ -11,6 +11,8 @@ const usersRouter = require('./routes/usersRouter')
 const productsRouter = require('./routes/productsRouter')
 const indexRouter = require("./routes/index");
 
+const port = process.env.PORT || 3000;
+
 require('dotenv').config(); //dotenv me variables h vo use me ajynge
 
 app.set("view engine","ejs");
@@ -32,7 +34,7 @@ app.use('/owners',ownersRouter);
 app.use('/users',usersRouter);
 app.use('/products',productsRouter);
 
-app.listen(3000,(err) => {
+app.listen(port,(err) => {
   if(err){
     console.log('Server ERROR',err);
     return;
