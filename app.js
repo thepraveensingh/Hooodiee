@@ -26,8 +26,9 @@ app.use(expressSession({
 }))
 app.use(flash()); //flash ko setup krne k liye session ki jrurat thi i.e. expresssession
 app.use(express.static(path.join(__dirname,'public')));
+app.set('views', path.join(__dirname, 'views'));
 
-
+app.locals.BASE_URL = process.env.BASE_URL;
 
 app.use("/", indexRouter);
 app.use('/owners',ownersRouter);
